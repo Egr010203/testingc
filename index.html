@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIM PoCUS — From Wood to Lives Saved</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:   #0D1829;
+    --purple: #7B2FBE;
+    --blue:   #4B7BF5;
+    --green:  #27AE60;
+    --white:  #F4F6FF;
+    --gray:   #8899BB;
+    --accent: #C8FF00;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; scroll-snap-type: y mandatory; }
+
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'Syne', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* ── SLIDE BASE ── */
+  .slide {
+    min-height: 100vh;
+    scroll-snap-align: start;
+    display: grid;
+    position: relative;
+    overflow: hidden;
+    padding: 5vh 6vw;
+  }
+
+  /* ── NAV DOTS ── */
+  .nav {
+    position: fixed;
+    right: 2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 100;
+  }
+  .nav a {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    border: 2px solid rgba(255,255,255,0.4);
+    transition: all 0.3s;
+    display: block;
+  }
+  .nav a:hover,
+  .nav a.active { background: var(--accent); border-color: var(--accent); transform: scale(1.4); }
+
+  /* ── SLIDE 0: Introduction ── */
+  #s0 {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto 1fr;
+    align-items: center;
+    gap: 3rem;
+    background: var(--navy);
+  }
+  #s0::before {
+    content: '';
+    position: absolute;
+    top: -200px; left: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(200,255,0,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .s0-left { grid-column: 1; grid-row: 1 / 3; display: flex; flex-direction: column; gap: 1.5rem; }
+  .s0-right { grid-column: 2; grid-row: 1 / 3; display: flex; flex-direction: column; gap: 1.5rem; }
+
+  /* ── SLIDE 1: PoCUS Rising ── */
+  #s1 {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto 1fr;
+    align-items: center;
+    gap: 2rem;
+    background: var(--navy);
+  }
+  #s1::before {
+    content: '';
+    position: absolute;
+    top: -200px; right: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(123,47,190,0.25) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  #s1::after {
+    content: '';
+    position: absolute;
+    bottom: -100px; left: 20%;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(75,123,245,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .s1-left { grid-column: 1; grid-row: 1 / 3; }
+  .s1-right { grid-column: 2; grid-row: 1 / 3; display: flex; flex-direction: column; gap: 1.5rem; }
+
+  .slide-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.1s forwards;
+  }
+
+  .slide-title {
+    font-size: clamp(2.2rem, 4vw, 3.8rem);
+    font-weight: 800;
+    line-height: 1.05;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.2s forwards;
+  }
+  .slide-title span { color: var(--accent); }
+
+  .slide-sub {
+    font-size: 1.05rem;
+    color: var(--gray);
+    line-height: 1.6;
+    margin-top: 1rem;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.35s forwards;
+  }
+
+  /* Stat cards */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.5s forwards;
+  }
+  .stat-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 1.2rem 1.4rem;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s, border-color 0.3s;
+  }
+  .stat-card:hover { transform: translateY(-4px); border-color: rgba(200,255,0,0.3); }
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+  .stat-num {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 0.3rem;
+  }
+  .stat-label {
+    font-size: 0.78rem;
+    color: var(--gray);
+    line-height: 1.4;
+  }
+
+
+  /* Trend bar chart */
+  .trend-chart {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 16px;
+    padding: 1.4rem;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.65s forwards;
+  }
+  .trend-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--gray);
+    letter-spacing: 1px;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+  }
+  .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 0.7rem;
+  }
+  .bar-year {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--gray);
+    width: 36px;
+    flex-shrink: 0;
+  }
+  .bar-track {
+    flex: 1;
+    height: 8px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--purple), var(--accent));
+    width: 0;
+    transition: width 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .bar-val {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--white);
+    width: 48px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  /* Problem pills */
+  .problem-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.55s forwards;
+  }
+  .problem-pill {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+    background: rgba(123,47,190,0.12);
+    border: 1px solid rgba(123,47,190,0.25);
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+    font-size: 0.88rem;
+    line-height: 1.4;
+    transition: border-color 0.3s;
+  }
+  .problem-pill:hover { border-color: var(--purple); }
+  .pill-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+
+  /* ── SLIDE 2: Prototype Evolution ── */
+  #s2 {
+    grid-template-columns: 1fr;
+    background: #0A1020;
+    align-items: start;
+  }
+  #s2::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 80% 20%, rgba(75,123,245,0.12) 0%, transparent 50%),
+      radial-gradient(ellipse at 10% 80%, rgba(123,47,190,0.12) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  .s2-header { margin-bottom: 2.5rem; }
+
+  .timeline {
+    display: grid;
+    grid-template-columns: 1fr 60px 1fr;
+    gap: 0;
+    position: relative;
+  }
+  .timeline-spine {
+    grid-column: 2;
+    grid-row: 1 / 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .spine-line {
+    width: 2px;
+    flex: 1;
+    background: linear-gradient(to bottom, transparent, var(--purple), var(--blue), var(--accent));
+  }
+
+  .tl-item {
+    padding: 0 1.2rem 2.5rem 1.2rem;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.5s;
+  }
+  .tl-item.visible { opacity: 1; transform: translateY(0); }
+  .tl-item.left { grid-column: 1; text-align: right; }
+  .tl-item.right { grid-column: 3; }
+
+  .tl-dot {
+    grid-column: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 2.5rem;
+  }
+  .tl-dot-inner {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    border: 3px solid var(--purple);
+    background: var(--navy);
+    position: relative;
+    transition: all 0.3s;
+    flex-shrink: 0;
+  }
+  .tl-dot-inner.accent { border-color: var(--accent); }
+  .tl-dot-inner.blue { border-color: var(--blue); }
+
+  .tl-phase {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--purple);
+    margin-bottom: 0.4rem;
+  }
+  .tl-phase.accent { color: var(--accent); }
+  .tl-phase.blue { color: var(--blue); }
+  .tl-title { font-size: 1.15rem; font-weight: 700; margin-bottom: 0.4rem; }
+  .tl-desc { font-size: 0.83rem; color: var(--gray); line-height: 1.5; }
+
+
+  .compare-box {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 0.5rem;
+    grid-column: 1 / -1;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.8s forwards;
+  }
+  .compare-card {
+    border-radius: 14px;
+    padding: 1.2rem;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .compare-card.wood { background: rgba(180,120,60,0.1); border-color: rgba(180,120,60,0.25); }
+  .compare-card.print { background: rgba(200,255,0,0.06); border-color: rgba(200,255,0,0.2); }
+  .compare-title {
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-bottom: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .compare-rows { display: flex; flex-direction: column; gap: 0.5rem; }
+  .compare-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .compare-row-label { color: var(--gray); }
+  .compare-row-val { font-weight: 700; }
+  .compare-row-val.bad { color: #E74C3C; }
+  .compare-row-val.good { color: var(--accent); }
+
+  /* ── SLIDE 3: Impact ── */
+  #s3 {
+    background: var(--navy);
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 3rem;
+  }
+  #s3::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 50%, rgba(39,174,96,0.08) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .impact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.4s forwards;
+  }
+  .impact-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 1.3rem;
+    transition: transform 0.3s, border-color 0.3s;
+  }
+  .impact-card:hover { transform: translateY(-5px); border-color: rgba(39,174,96,0.4); }
+  .impact-card.wide { grid-column: 1 / -1; }
+  .impact-icon { font-size: 1.6rem; margin-bottom: 0.6rem; }
+  .impact-num {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--green);
+    line-height: 1;
+    margin-bottom: 0.3rem;
+  }
+  .impact-desc { font-size: 0.8rem; color: var(--gray); line-height: 1.4; }
+
+  .milestone-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.55s forwards;
+  }
+  .milestone {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem 1.2rem;
+    background: rgba(255,255,255,0.03);
+    border-radius: 12px;
+    border-left: 3px solid var(--green);
+    transition: transform 0.3s;
+  }
+  .milestone:hover { transform: translateX(6px); }
+  .milestone-icon { font-size: 1.2rem; flex-shrink: 0; }
+  .milestone-text { font-size: 0.88rem; line-height: 1.45; }
+  .milestone-text strong { color: var(--white); display: block; margin-bottom: 0.15rem; }
+  .milestone-text span { color: var(--gray); }
+
+  /* ── PHOTO PLACEHOLDER ── */
+  .photo-slot {
+    aspect-ratio: 4/3;
+    border-radius: 16px;
+    border: 2px dashed rgba(200,255,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    color: rgba(200,255,0,0.5);
+    text-align: center;
+    line-height: 1.6;
+    background: rgba(200,255,0,0.03);
+    position: relative;
+    overflow: hidden;
+  }
+  .photo-slot img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 14px;
+    display: none;
+  }
+  .photo-slot img.loaded { display: block; }
+
+  /* ── BOTTOM PRESENTER BAR ── */
+  .presenter-bar {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(13,24,41,0.9);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 50px;
+    padding: 0.5rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--gray);
+    z-index: 100;
+  }
+  .presenter-bar span { color: var(--accent); font-weight: 700; }
+
+
+  /* ── SLIDE NUMBER ── */
+  .slide-num {
+    position: absolute;
+    top: 2rem; right: 4rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: rgba(255,255,255,0.2);
+    letter-spacing: 2px;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.08); opacity: 0.85; }
+  }
+
+  /* ── SECTION DIVIDER LABEL ── */
+  .section-label {
+    position: absolute;
+    top: 2rem; left: 6vw;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.15);
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV DOTS -->
+<nav class="nav">
+  <a href="#s0" class="active" title="Introduction"></a>
+  <a href="#s1" title="PoCUS Research"></a>
+  <a href="#s2" title="Prototype Evolution"></a>
+  <a href="#s3" title="Impact & Results"></a>
+</nav>
+
+<!-- PRESENTER BAR -->
+<div class="presenter-bar">
+  <span>SIM PoCUS</span>
+  Medical Integral LLC &nbsp;·&nbsp; Egor Shchukin & Kalashnikov Egor &nbsp;·&nbsp; NUST MISIS 2025
+</div>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 0 — Introduction
+     ════════════════════════════════════════════ -->
+<section class="slide" id="s0">
+  <div class="slide-num">01 / 04</div>
+  <div class="section-label">Introduction</div>
+
+  <div class="s0-left">
+    <div class="slide-tag">Beyond Toys</div>
+    <h1 class="slide-title" style="font-size: clamp(2rem, 3.5vw, 3.2rem); margin-bottom: 0.5rem;">
+      The <span>Prototyping</span><br>Revolution
+    </h1>
+    
+    <div class="problem-list" style="margin-top: 1rem;">
+      <div class="problem-pill" style="border-color: rgba(200,255,0,0.3); background: rgba(200,255,0,0.05);">
+        <span class="pill-icon">🛠️</span>
+        <span>While many associate 3D printers with trinkets, they actually allow engineers to test hypotheses and find design flaws in <strong>hours instead of weeks</strong>.</span>
+      </div>
+      <div class="problem-pill">
+        <span class="pill-icon">🏎️</span>
+        <span><strong>F1 Suspension (1/10 scale):</strong> We tested iterations where dimensions restricted movement. We easily corrected it by <strong>drilling the plastic prototype</strong> to achieve full suspension travel.</span>
+      </div>
+      <div class="problem-pill" style="border-color: rgba(39,174,96,0.3); background: rgba(39,174,96,0.08);">
+        <span class="pill-icon">❤️</span>
+        <span>This incredibly low cost and extreme flexibility leads to a bigger goal: moving this technology from winning races to <strong>saving human lives in medicine</strong>.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="s0-right">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 0.5rem;">
+      <div class="photo-slot" style="border-color: rgba(200,255,0,0.5);" id="photo0a">
+        <span>📷<br>ADD PHOTO<br>3D Printer</span>
+        <img id="img0a" alt="3D Printer">
+      </div>
+      <div class="photo-slot" style="border-color: rgba(200,255,0,0.5);" id="photo0b">
+        <span>📷<br>ADD PHOTO<br>F1 Prototype</span>
+        <img id="img0b" alt="F1 Prototype">
+      </div>
+    </div>
+
+    <div class="compare-box" style="animation-delay: 0.4s;">
+      <div class="compare-card wood" style="background: rgba(136,153,187,0.1); border-color: rgba(136,153,187,0.3);">
+        <div class="compare-title">🏎️ Carbon Fiber Part</div>
+        <div class="compare-rows">
+          <div class="compare-row">
+            <span class="compare-row-label">Time to make</span>
+            <span class="compare-row-val bad">2-3 days</span>
+          </div>
+          <div class="compare-row">
+            <span class="compare-row-label">Part Cost (1/10 scale)</span>
+            <span class="compare-row-val bad">~₽2000+</span>
+          </div>
+          <div class="compare-row">
+            <span class="compare-row-label">Process flow</span>
+            <span class="compare-row-val bad" style="font-size: 0.75rem;">Molds, vacuum, curing. Extremely complex.</span>
+          </div>
+        </div>
+      </div>
+      <div class="compare-card print">
+        <div class="compare-title" style="color: var(--accent);">🖨️ 3D Printed Plastic</div>
+        <div class="compare-rows">
+          <div class="compare-row">
+            <span class="compare-row-label">Time to make</span>
+            <span class="compare-row-val good">~20 minutes</span>
+          </div>
+          <div class="compare-row">
+            <span class="compare-row-label">Part Cost (1/10 scale)</span>
+            <span class="compare-row-val good">~₽15</span>
+          </div>
+          <div class="compare-row">
+            <span class="compare-row-label">Process flow</span>
+            <span class="compare-row-val good" style="font-size: 0.75rem;">Export CAD & Print. Extremely easy.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 1 — PoCUS Research & Why It Matters
+     ════════════════════════════════════════════ -->
+<section class="slide" id="s1">
+  <div class="slide-num">02 / 04</div>
+  <div class="section-label">Context</div>
+
+  <div class="s1-left">
+    <div class="slide-tag">Point-of-Care Ultrasound</div>
+    <h1 class="slide-title">
+      PoCUS is<br>changing<br><span>emergency</span><br>medicine
+    </h1>
+    <p class="slide-sub">
+      A portable ultrasound scan at the bedside can diagnose
+      life-threatening conditions in under 3 minutes —
+      before a patient ever reaches a CT scanner.
+    </p>
+
+    <div class="problem-list" style="margin-top: 1.5rem;">
+      <div class="problem-pill">
+        <span class="pill-icon">⚡️</span>
+        <span>FAST/eFAST protocol: detects pneumothorax, cardiac tamponade & internal bleeding instantly</span>
+      </div>
+      <div class="problem-pill">
+        <span class="pill-icon">📈</span>
+        <span>PoCUS adoption is <strong>growing globally</strong> — but training access hasn't kept up</span>
+      </div>
+      <div class="problem-pill">
+        <span class="pill-icon">⚠️</span>
+        <span>Most residents perform only <strong>2–10 scans/month</strong>. Competency requires <strong>20–50</strong></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="s1-right">
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-num">3 min</div>
+        <div class="stat-label">Time to diagnose trauma with FAST protocol</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">44%</div>
+        <div class="stat-label">Missed pneumothorax rate without ultrasound</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">7–12M</div>
+        <div class="stat-label">Cost (RUB) of existing PoCUS simulators</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">2026</div>
+        <div class="stat-label">Russian CME mandate for FAST/eFAST training</div>
+      </div>
+    </div>
+
+
+    <div class="trend-chart" id="trendChart">
+      <div class="trend-label">Global PoCUS training demand growth</div>
+      <div class="bar-row">
+        <div class="bar-year">2020</div>
+        <div class="bar-track"><div class="bar-fill" data-w="28"></div></div>
+        <div class="bar-val">baseline</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-year">2022</div>
+        <div class="bar-track"><div class="bar-fill" data-w="52"></div></div>
+        <div class="bar-val">+86%</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-year">2024</div>
+        <div class="bar-track"><div class="bar-fill" data-w="75"></div></div>
+        <div class="bar-val">+168%</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-year">2026+</div>
+        <div class="bar-track"><div class="bar-fill" data-w="95" style="background: linear-gradient(90deg, #7B2FBE, #C8FF00);"></div></div>
+        <div class="bar-val" style="color:#C8FF00">↗️ reg.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 2 — Prototype Evolution
+     ════════════════════════════════════════════ -->
+<section class="slide" id="s2">
+  <div class="slide-num">03 / 04</div>
+  <div class="section-label">Prototyping</div>
+
+  <div class="s2-header">
+    <div class="slide-tag" style="animation-delay:0.1s">Hardware Evolution</div>
+    <h1 class="slide-title" style="animation-delay:0.2s; font-size: clamp(1.8rem,3.5vw,3rem)">
+      From <span>wood</span> to 3D-print:<br>how iteration shaped SIM PoCUS
+    </h1>
+  </div>
+
+  <div class="timeline">
+    <!-- LEFT: v1 Wood -->
+    <div class="tl-item left" id="tl1">
+      <div class="tl-phase">Version 1.0</div>
+      <div class="tl-title">Wooden Prototype</div>
+      <div class="tl-desc">
+        First housing built by hand from wood.
+        Proved the core concept worked — but heavy,
+        fragile, and slow to iterate.
+      </div>
+      <div class="photo-slot" style="margin-top:0.8rem; max-width:260px; margin-left:auto;" id="photo1">
+        <span>📷<br>ADD PHOTO<br>wood prototype</span>
+        <img id="img1" alt="Wood prototype">
+      </div>
+    </div>
+
+    <!-- SPINE -->
+    <div class="timeline-spine">
+      <div class="tl-dot-inner" style="margin-top:0.5rem; border-color:rgba(180,120,60,0.8)"></div>
+      <div class="spine-line"></div>
+      <div class="tl-dot-inner blue" style="margin:0.5rem 0"></div>
+      <div class="spine-line"></div>
+      <div class="tl-dot-inner accent" style="margin-bottom:0.5rem"></div>
+    </div>
+
+    <!-- RIGHT: v2 3D -->
+    <div class="tl-item right" id="tl2" style="padding-top:0.5rem">
+      <div class="tl-phase blue">Version 2.0</div>
+      <div class="tl-title">3D-Printed Housing</div>
+      <div class="tl-desc">
+        Switched to FDM 3D printing.
+        Ergonomics improved dramatically — custom shapes,
+        precise fits, reproducible parts in hours.
+      </div>
+      <div class="photo-slot" style="margin-top:0.8rem; max-width:260px;" id="photo2">
+        <span>📷<br>ADD PHOTO<br>3D-printed v2</span>
+        <img id="img2" alt="3D printed v2">
+      </div>
+    </div>
+
+    <!-- LEFT: Result -->
+    <div class="tl-item left" id="tl3" style="padding-top:0.5rem">
+      <div class="tl-phase accent">Current</div>
+      <div class="tl-title">Production-Ready</div>
+      <div class="tl-desc">
+        TRL 5–6. Repka Pi compute, RFID probe tracking,
+        full FAST/eFAST scenario library.
+        Serial production starting 2026.
+      </div>
+      <div class="photo-slot" style="margin-top:0.8rem; max-width:260px; margin-left:auto;" id="photo3">
+        <span>📷<br>ADD PHOTO<br>current device</span>
+        <img id="img3" alt="Current device">
+      </div>
+    </div>
+
+
+    <div style="grid-column: 3; padding-top:0.5rem;" class="tl-item" id="tl4">
+      <div class="tl-phase accent">Why it matters</div>
+      <div class="tl-title">Same tech, different stakes</div>
+      <div class="tl-desc">
+        3D printing cut our iteration time from weeks to days.
+        No tooling costs. Any shape. Any revision.
+        That's how a student can build a medical device.
+      </div>
+    </div>
+  </div>
+
+  <!-- Wood vs 3D comparison -->
+  <div class="compare-box">
+    <div class="compare-card wood">
+      <div class="compare-title">🪵 Wood Prototype</div>
+      <div class="compare-rows">
+        <div class="compare-row">
+          <span class="compare-row-label">Production time</span>
+          <span class="compare-row-val bad">3–5 days</span>
+        </div>
+        <div class="compare-row">
+          <span class="compare-row-label">Iteration cost</span>
+          <span class="compare-row-val bad">High</span>
+        </div>
+        <div class="compare-row">
+          <span class="compare-row-label">Ergonomics</span>
+          <span class="compare-row-val bad">Poor</span>
+        </div>
+        <div class="compare-row">
+          <span class="compare-row-label">Reproducibility</span>
+          <span class="compare-row-val bad">Manual, imprecise</span>
+        </div>
+      </div>
+    </div>
+    <div class="compare-card print">
+      <div class="compare-title" style="color:var(--accent)">🖨 3D-Printed Housing</div>
+      <div class="compare-rows">
+        <div class="compare-row">
+          <span class="compare-row-label">Production time</span>
+          <span class="compare-row-val good">4–8 hours</span>
+        </div>
+        <div class="compare-row">
+          <span class="compare-row-label">Iteration cost</span>
+          <span class="compare-row-val good">~₽150 / print</span>
+        </div>
+        <div class="compare-row">
+          <span class="compare-row-label">Ergonomics</span>
+          <span class="compare-row-val good">Custom-shaped</span>
+        </div>
+        <div class="compare-row">
+          <span class="compare-row-label">Reproducibility</span>
+          <span class="compare-row-val good">Identical every time</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 3 — Results & Impact
+     ════════════════════════════════════════════ -->
+<section class="slide" id="s3">
+  <div class="slide-num">04 / 04</div>
+  <div class="section-label">Impact</div>
+
+  <div>
+    <div class="slide-tag">Results</div>
+    <h1 class="slide-title" style="font-size: clamp(1.8rem,3.2vw,3rem); margin-bottom:1.2rem">
+      Real device.<br><span>Real results.</span>
+    </h1>
+
+    <div class="impact-grid">
+      <div class="impact-card">
+        <div class="impact-icon">👨‍⚕️</div>
+        <div class="impact-num">50</div>
+        <div class="impact-desc">Physicians trained in clinical pilots</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-icon">✅</div>
+        <div class="impact-num">96%</div>
+        <div class="impact-desc">Achieved confident PoCUS competency</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-icon">💰</div>
+        <div class="impact-num">20×</div>
+        <div class="impact-desc">Cheaper than nearest competitor</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-icon">🏆</div>
+        <div class="impact-num">TRL 6</div>
+        <div class="impact-desc">Technology readiness — production ready</div>
+      </div>
+      <div class="impact-card wide">
+        <div class="photo-slot" style="aspect-ratio: 16/5; border-style: solid; border-color: rgba(39,174,96,0.3);" id="photo4">
+          <span>📷 ADD PHOTO — device in use at Rogachev / conference demo</span>
+          <img id="img4" alt="Device in use">
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div>
+    <div class="milestone-list">
+      <div class="milestone">
+        <span class="milestone-icon">🏥</span>
+        <div class="milestone-text">
+          <strong>Clinical pilot — NMRC DGOI named after Rogachev</strong>
+          <span>Russia's leading pediatric oncology & hematology center. Two pilot cycles completed.</span>
+        </div>
+      </div>
+      <div class="milestone">
+        <span class="milestone-icon">🏆</span>
+        <div class="milestone-text">
+          <strong>Winner — ROSOMED 2024</strong>
+          <span>National medical simulation competition. Best innovation in emergency training.</span>
+        </div>
+      </div>
+      <div class="milestone">
+        <span class="milestone-icon">💼</span>
+        <div class="milestone-text">
+          <strong>FSI Grant — "Student Startup 2025"</strong>
+          <span>Government grant from the Foundation for Assistance to Innovations.</span>
+        </div>
+      </div>
+      <div class="milestone">
+        <span class="milestone-icon">🤝</span>
+        <div class="milestone-text">
+          <strong>4 Clinical partners + Investment offers received</strong>
+          <span>MEDSTAR · Pocus.Moscow · FNKTS RR · Rogachev NMRC</span>
+        </div>
+      </div>
+      <div class="milestone">
+        <span class="milestone-icon">🌍</span>
+        <div class="milestone-text">
+          <strong>International expansion underway</strong>
+          <span>Buyers engaged in Kazakhstan. BRICS Young Innovators Prize applicant.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+// ── NAV DOTS ──────────────────────────────────────────
+const slides = document.querySelectorAll('.slide');
+const dots   = document.querySelectorAll('.nav a');
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      dots.forEach(d => d.classList.remove('active'));
+      const idx = [...slides].indexOf(e.target);
+      if (dots[idx]) dots[idx].classList.add('active');
+      // trigger bar chart on slide 1
+      if (idx === 1) animateBars();
+    }
+  });
+}, { threshold: 0.5 });
+slides.forEach(s => observer.observe(s));
+
+// ── BAR CHART ANIMATION ───────────────────────────────
+function animateBars() {
+  document.querySelectorAll('.bar-fill').forEach(b => {
+    b.style.width = b.dataset.w + '%';
+  });
+}
+setTimeout(animateBars, 600);
+
+// ── TIMELINE SCROLL REVEAL ────────────────────────────
+const tlItems = document.querySelectorAll('.tl-item');
+const tlObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add('visible');
+  });
+}, { threshold: 0.2 });
+tlItems.forEach(i => tlObs.observe(i));
+
+// ── PHOTO UPLOAD ──────────────────────────────────────
+document.querySelectorAll('.photo-slot').forEach(slot => {
+  const slotId = slot.id;
+  const img = slot.querySelector('img');
+  const span = slot.querySelector('span');
+
+  // Load from localStorage if photo was saved previously
+  if (slotId) {
+    const savedPhoto = localStorage.getItem('saved_photo_' + slotId);
+    if (savedPhoto) {
+      img.src = savedPhoto;
+      img.classList.add('loaded');
+      span.style.display = 'none';
+    }
+  }
+
+  slot.style.cursor = 'pointer';
+  slot.addEventListener('click', () => {
+    const input = document.createElement('input');
+    input.type = 'file'; input.accept = 'image/*';
+    input.onchange = e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        const result = ev.target.result;
+        img.src = result;
+        img.classList.add('loaded');
+        span.style.display = 'none';
+        
+        // Save base64 string to localStorage
+        if (slotId) {
+          try {
+            localStorage.setItem('saved_photo_' + slotId, result);
+          } catch (err) {
+            console.warn('Файл слишком большой для localStorage(~5MB лимит):', err);
+          }
+        }
+      };
+      reader.readAsDataURL(file);
+    };
+    input.click();
+  });
+});
+</script>
+</body>
+</html>
