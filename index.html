@@ -562,12 +562,12 @@
   <div class="s0-right">
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 0.5rem;">
       <div class="photo-slot" style="border-color: rgba(200,255,0,0.5);" id="photo0a">
-        <span>📷<br>ADD PHOTO<br>3D Printer</span>
-        <img id="img0a" alt="3D Printer">
+        <img src="images/printer.jpg" id="img0a" alt="3D Printer" class="loaded" onerror="this.classList.remove('loaded'); this.previousElementSibling.style.display='block';">
+        <span style="display:none">📷<br>ADD PHOTO<br>3D Printer<br><small>(images/printer.jpg)</small></span>
       </div>
       <div class="photo-slot" style="border-color: rgba(200,255,0,0.5);" id="photo0b">
-        <span>📷<br>ADD PHOTO<br>F1 Prototype</span>
-        <img id="img0b" alt="F1 Prototype">
+        <img src="images/f1.jpg" id="img0b" alt="F1 Prototype" class="loaded" onerror="this.classList.remove('loaded'); this.previousElementSibling.style.display='block';">
+        <span style="display:none">📷<br>ADD PHOTO<br>F1 Prototype<br><small>(images/f1.jpg)</small></span>
       </div>
     </div>
 
@@ -716,8 +716,8 @@
         fragile, and slow to iterate.
       </div>
       <div class="photo-slot" style="margin-top:0.8rem; max-width:260px; margin-left:auto;" id="photo1">
-        <span>📷<br>ADD PHOTO<br>wood prototype</span>
-        <img id="img1" alt="Wood prototype">
+        <img src="images/wood.jpg" id="img1" alt="Wood prototype" class="loaded" onerror="this.classList.remove('loaded'); this.previousElementSibling.style.display='block';">
+        <span style="display:none">📷<br>ADD PHOTO<br>wood prototype<br><small>(images/wood.jpg)</small></span>
       </div>
     </div>
 
@@ -740,8 +740,8 @@
         precise fits, reproducible parts in hours.
       </div>
       <div class="photo-slot" style="margin-top:0.8rem; max-width:260px;" id="photo2">
-        <span>📷<br>ADD PHOTO<br>3D-printed v2</span>
-        <img id="img2" alt="3D printed v2">
+        <img src="images/3d_printed.jpg" id="img2" alt="3D printed v2" class="loaded" onerror="this.classList.remove('loaded'); this.previousElementSibling.style.display='block';">
+        <span style="display:none">📷<br>ADD PHOTO<br>3D-printed v2<br><small>(images/3d_printed.jpg)</small></span>
       </div>
     </div>
 
@@ -755,8 +755,8 @@
         Serial production starting 2026.
       </div>
       <div class="photo-slot" style="margin-top:0.8rem; max-width:260px; margin-left:auto;" id="photo3">
-        <span>📷<br>ADD PHOTO<br>current device</span>
-        <img id="img3" alt="Current device">
+        <img src="images/current.jpg" id="img3" alt="Current device" class="loaded" onerror="this.classList.remove('loaded'); this.previousElementSibling.style.display='block';">
+        <span style="display:none">📷<br>ADD PHOTO<br>current device<br><small>(images/current.jpg)</small></span>
       </div>
     </div>
 
@@ -853,10 +853,10 @@
         <div class="impact-num">TRL 6</div>
         <div class="impact-desc">Technology readiness — production ready</div>
       </div>
-      <div class="impact-card wide">
-        <div class="photo-slot" style="aspect-ratio: 16/5; border-style: solid; border-color: rgba(39,174,96,0.3);" id="photo4">
-          <span>📷 ADD PHOTO — device in use at Rogachev / conference demo</span>
-          <img id="img4" alt="Device in use">
+      <div class="impact-card wide" style="padding: 0; display: flex; border-color: rgba(39,174,96,0.3); overflow: hidden;">
+        <div class="photo-slot" style="aspect-ratio: auto; border: none; width: 100%; min-height: 120px;" id="photo4">
+          <img src="images/action.jpg" id="img4" alt="Device in use" class="loaded" style="position: static; width: 100%; height: auto; display: block; border-radius: 16px;" onerror="this.classList.remove('loaded'); this.previousElementSibling.style.display='block';">
+          <span style="display:none; padding: 2rem;">📷 ADD PHOTO — device in use at Rogachev / conference demo<br><small>(images/action.jpg)</small></span>
         </div>
       </div>
     </div>
@@ -945,15 +945,6 @@ document.querySelectorAll('.photo-slot').forEach(slot => {
   const img = slot.querySelector('img');
   const span = slot.querySelector('span');
 
-  // Load from localStorage if photo was saved previously
-  if (slotId) {
-    const savedPhoto = localStorage.getItem('saved_photo_' + slotId);
-    if (savedPhoto) {
-      img.src = savedPhoto;
-      img.classList.add('loaded');
-      span.style.display = 'none';
-    }
-  }
 
   slot.style.cursor = 'pointer';
   slot.addEventListener('click', () => {
